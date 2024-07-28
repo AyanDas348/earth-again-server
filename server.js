@@ -38,9 +38,20 @@ const scorecardDataSchema = new mongoose.Schema({
     selectedOptions: [String],
 });
 
+const constituencyScoreCard = new mongoose.Schema({
+    constituencyName: {
+        required: true,
+        type: String,
+        unique: true
+    },
+    score: Number,
+    topIssues: [String]
+})
+
 const User = mongoose.model('User', userSchema);
 const Event = mongoose.model('Event', eventSchema);
 const ScorecardData = mongoose.model('ScorecardData', scorecardDataSchema);
+const ConstituencyScoreCard = mongoose.model('ConstituencyScoreCard', constituencyScoreCard);
 
 // Routes
 
