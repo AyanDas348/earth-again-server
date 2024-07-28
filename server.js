@@ -88,7 +88,7 @@ app.post('/event', async (req, res) => {
 app.get('/events/:userId', async (req, res) => {
     const { userId } = req.params;
     try {
-        const events = await Event.find({ userId }).select('date event -_id');
+        const events = await Event.find({ userId });
         res.status(200).json({ userId, events });
     } catch (err) {
         res.status(400).send(err.message);
