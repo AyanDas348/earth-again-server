@@ -15,24 +15,28 @@ const constituencyScoreCard = new mongoose.Schema({
         unique: true
     },
     score: Number,
-    topIssues: [String]
+    topIssues: [String],
+    name: String,
+    comment: String,
 });
 
 const ConstituencyScoreCard = mongoose.model('ConstituencyScoreCard', constituencyScoreCard);
 
 const odishaConstituencies = [
-    'Angul','Balangir', 'Bargarh', 'Deogarh', 'Dhenkanal', 'Jharsuguda', 'Kendujhar', 'Sambalpur', 'Subarnapur', 'Sundargarh',
+    'Angul', 'Balangir', 'Bargarh', 'Deogarh', 'Dhenkanal', 'Jharsuguda', 'Kendujhar', 'Sambalpur', 'Subarnapur', 'Sundargarh',
     'Balasore', 'Bhadrak', 'Cuttack', 'Jagatsinghpur', 'Jajpur', 'Kendrapada', 'Khordha', 'Mayurbhanj', 'Nayagarh', 'Puri',
     'Boudh', 'Gajapati', 'Ganjam', 'Kalahandi', 'Kandhamal', 'Koraput', 'Malkangiri', 'Nabarangpur', 'Nuapada', 'Rayagada'
 ]
 
 const topIssues = [
-    "Extreme Heat: More frequent and severe heatwaves, impacting health, agriculture, and energy demand.",
-    "Monsoon Variability: Unpredictable monsoons cause excessive rainfall and droughts, affecting agriculture and water resources.",
-    "Glacial Retreat: Himalayan glaciers are retreating, reducing water availability and increasing flood risks.",
-    "Sea Level Rise: Rising sea levels threaten coastal cities with flooding and erosion, and affect freshwater supplies.",
-    "Agricultural Impact: Changes in climate reduce crop yields, leading to food insecurity and economic challenges."
+    "Extreme Heat",
+    "Monsoon Variability",
+    "Glacial Retreat",
+    "Sea Level Rise",
+    "Agricultural Impact"
 ];
+
+const comment = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. '
 
 const insertConstituencies = async () => {
     try {
@@ -41,7 +45,9 @@ const insertConstituencies = async () => {
             const newConstituency = new ConstituencyScoreCard({
                 constituencyName: constituency,
                 score: score,
-                topIssues: topIssues
+                topIssues: topIssues,
+                comment: comment,
+                name: 'Random User',
             });
             await newConstituency.save();
         }

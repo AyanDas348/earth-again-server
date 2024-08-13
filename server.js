@@ -45,7 +45,9 @@ const constituencyScoreCard = new mongoose.Schema({
         unique: true
     },
     score: Number,
-    topIssues: [String]
+    topIssues: [String],
+    name: String,
+    comment: String,
 })
 
 const User = mongoose.model('User', userSchema);
@@ -117,6 +119,14 @@ app.post('/scorecard', async (req, res) => {
         res.status(400).send(err.message);
     }
 });
+
+// 5. All scorecard data
+app.get('/scorecard', async (req, res) => {
+    const scorecardData = await ScorecardData.find()
+    if(scorecardData.length === 0)
+        return []
+    else return scorecardData
+})
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
