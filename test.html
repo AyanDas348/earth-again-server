@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score Cards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .search-container {
+            margin: 20px;
+            position: relative;
+        }
+        .search-container input {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-container button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            display: none;
+            z-index: 1000;
+        }
+        .dropdown option {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .dropdown option:hover {
+            background-color: #f1f1f1;
+        }
+       
+        .green { background-color: #d4edda; }
+        .yellow { background-color: #fff3cd; }
+        .orange { background-color: #fd7e14; }
+        .red { background-color: #f8d7da; }
+    </style>
+      <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 2000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .clear-button {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .dropdown {
+            position: absolute;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .dropdown option {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .dropdown option:hover {
+            background-color: #f1f1f1;
+        }
+
+        .card {
+            display: inline-block;
+            vertical-align: top;
+            width: calc(33.33% - 20px);
+            min-width: 300px;
+            height: 650px;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .card img {
+            width: calc(100% - 40px);
+            height: 200px;
+            border-radius: 35px;
+            margin: 0 20px 40px 20px;
+        }
+
+        .card .district-name {
+            font-size: calc((20 * 1px) + 1.5vmin);
+            font-weight: 700;
+            display: inline-block;
+            margin-left: 20px;
+        }
+
+        .card .score {
+            font-size: 65px;
+            font-weight: bold;
+            position: absolute;
+            top: 240px;
+            right: 40px;
+        }
+
+        .card .description {
+            margin: 40px 20px;
+        }
+
+        .card .issues {
+            margin: 40px 20px;
+        }
+
+        .card .issues ul {
+            padding-left: 20px;
+        }
+
+        .card.red {
+            background-color: red;
+            color: white;
+        }
+
+        .card.orange {
+            background-color: orange;
+            color: white;
+        }
+
+        .card.yellow {
+            background-color: yellow;
+            color: black;
+        }
+
+        .card.green {
+            background-color: green;
+            color: white;
+        }
+
+        @media (max-width: 1200px) {
+            .card {
+                width: calc(50% - 20px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                width: calc(100% - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <input type="text" id="districtSearch" placeholder="Search by district" onkeyup="showDropdown()" onclick="showDropdown()">
+        <button onclick="clearSearch()">Clear</button>
+        <div id="dropdown" class="dropdown"></div>
+    </div>
+    <div id="cardsContainer" class="cards-container"></div>
+
+    <script>
+        const apiUrl = 'http://localhost:3000/api/scores';
+
+        function getCardClass(score) {
+            if (score <= 40) {
+                return "green";
+            } else if (score <= 70) {
+                return "yellow";
+            } else if (score <= 90) {
+                return "orange";
+            } else {
+                return "red";
+            }
+        }
+
+        function createCard(data) {
+            const card = document.createElement('div');
+            card.className = 'card ' + getCardClass(data.score);
+
+            const img = document.createElement('img');
+            img.src = data.image;
+
+            const districtName = document.createElement('div');
+            districtName.className = 'district-name';
+            districtName.textContent = data.district;
+
+            const score = document.createElement('div');
+            score.className = 'score';
+            score.textContent = data.score;
+
+            const description = document.createElement('div');
+            description.className = 'description';
+            description.textContent = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.';
+
+            const issues = document.createElement('div');
+            issues.className = 'issues';
+            const issuesList = document.createElement('ul');
+            data.issues.forEach(issue => {
+                const li = document.createElement('li');
+                li.textContent = issue;
+                issuesList.appendChild(li);
+            });
+            issues.appendChild(issuesList);
+
+            card.appendChild(img);
+            card.appendChild(districtName);
+            card.appendChild(score);
+            card.appendChild(description);
+            card.appendChild(issues);
+
+            return card;
+        }
+
+        function displayCards(data) {
+            const cardsContainer = document.getElementById('cardsContainer');
+            cardsContainer.innerHTML = '';
+            data.slice(0, 3).forEach(item => {
+                const card = createCard(item);
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        function fetchScores() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    window.scoresData = data;
+                    displayCards(data);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function filterCards(query) {
+            if (query === '') {
+                displayCards(window.scoresData);
+            } else {
+                const filteredData = window.scoresData.filter(item => item.district.toLowerCase().includes(query.toLowerCase()));
+                displayCards(filteredData);
+            }
+        }
+
+        function showDropdown() {
+            const searchInput = document.getElementById('districtSearch');
+            const dropdown = document.getElementById('dropdown');
+            const query = searchInput.value.toLowerCase();
+
+            dropdown.innerHTML = '';
+
+            const options = window.scoresData
+                .filter(item => item.district.toLowerCase().includes(query))
+                .sort((a, b) => a.district.localeCompare(b.district))
+                .map(item => `<option onclick="selectDistrict('${item.district}')">${item.district}</option>`)
+                .join('');
+
+            dropdown.innerHTML = options;
+            dropdown.style.display = options.length > 0 ? 'block' : 'none';
+
+            filterCards(query);
+        }
+
+        function selectDistrict(district) {
+            document.getElementById('districtSearch').value = district;
+            hideDropdown();
+            filterCards(district);
+        }
+
+        function hideDropdown() {
+            setTimeout(() => {
+                document.getElementById('dropdown').style.display = 'none';
+            }, 100);
+        }
+
+        function clearSearch() {
+            document.getElementById('districtSearch').value = '';
+            filterCards('');
+            showDropdown();
+        }
+
+        // Initial fetch of all cards
+        fetchScores();
+    </script>
+</body>
+</html>
