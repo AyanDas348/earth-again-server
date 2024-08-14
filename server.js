@@ -5,6 +5,7 @@ const port = 3000;
 
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
 
 // Sample data
 const scoresData = [
@@ -150,6 +151,32 @@ app.get('/scorecard', async (req, res) => {
         return []
     else return scorecardData
 })
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'your-email@gmail.com',
+        pass: 'your-email-password'
+    }
+});
+
+app.post('/send-email', (req, res) => {
+    const { name, email, phone, message } = req.body;
+
+    const mailOptions = {
+        from: email,
+        to: 'sales@bharatsfitnessden.com',
+        subject: `New Message for joining gym from ${name}`,
+        text: `Name: ${name} \n Mobile: ${phone} \n Email: ${email} \n ${message}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send(error.toString());
+        }
+        res.send('Email sent successfully!');
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
