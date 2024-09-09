@@ -108,10 +108,9 @@ const ConstituencyScoreCard = mongoose.model('ConstituencyScoreCard', constituen
 const Scorecard = mongoose.model('Scorecard', scorecard);
 
 // Routes
-
 app.post('/api/v1/scorecard/scoreinsert', async (req, res) => {
     const { district, issues } = req.body;
-
+    console.log(req.body)
     try {
         // Find the district
         const scorecard = await Scorecard.findOne({ district });
@@ -211,7 +210,7 @@ app.post('/scorecard', async (req, res) => {
 // 5. All scorecard data
 app.get('/scorecard', async (req, res) => {
     const scorecardData = await ScorecardData.find()
-    if(scorecardData.length === 0)
+    if (scorecardData.length === 0)
         return []
     else return scorecardData
 })
