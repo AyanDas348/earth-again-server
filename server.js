@@ -146,6 +146,7 @@ app.get('/events/:userId', async (req, res) => {
 // 4. Save userId and array of selected options
 app.post('/scorecard', async (req, res) => {
     const { userId, selectedOptions } = req.body;
+    console.log(req.body)
     const scorecardData = new ScorecardData({ userId, selectedOptions });
     try {
         await scorecardData.save();
