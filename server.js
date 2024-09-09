@@ -85,12 +85,64 @@ const constituencyScoreCard = new mongoose.Schema({
     comment: String,
 })
 
+const scorecard = new mongoose.Schema({
+    district: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    score: {
+        type: Number,
+        required: true
+    },
+    image: {
+        type: String
+    },
+    issues: [String]
+});
+
 const User = mongoose.model('User', userSchema);
 const Event = mongoose.model('Event', eventSchema);
 const ScorecardData = mongoose.model('ScorecardData', scorecardDataSchema);
 const ConstituencyScoreCard = mongoose.model('ConstituencyScoreCard', constituencyScoreCard);
+const Scorecard = mongoose.model('Scorecard', scorecard);
 
 // Routes
+
+app.post('/api/v1/scorecard/scoreinsert', async (req, res) => {
+    const { district, issues } = req.body;
+
+    try {
+        // Find the district
+        const scorecard = await Scorecard.findOne({ district });
+
+        if (!scorecard) {
+            return res.status(404).send('District not found');
+        }
+
+        // Increase the score by 1
+        scorecard.score += 1;
+
+        // Update top issues
+        scorecard.issues = issues;
+
+        await scorecard.save();
+        res.status(200).send('Score and issues updated successfully');
+    } catch (err) {
+        res.status(400).send(err.message);
+    }
+});
+
+
+app.get('/api/v1/scorecard/getscores', async (req, res) => {
+    try {
+        const scores = await Scorecard.find();
+        res.status(200).json(scores);
+    } catch (err) {
+        res.status(400).send(err.message);
+    }
+});
+
 
 // 1. Save userId and email
 app.post('/user', async (req, res) => {
