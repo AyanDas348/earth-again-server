@@ -98,7 +98,19 @@ const scorecard = new mongoose.Schema({
     image: {
         type: String
     },
-    issues: [String]
+    issues: [String],
+    issuesCount: [
+        {
+            name: {
+                type: String,
+                required: true
+            },
+            votes: {
+                type: Number,
+                default: 0,
+            }
+        }
+    ]
 });
 
 const User = mongoose.model('User', userSchema);
@@ -110,22 +122,41 @@ const Scorecard = mongoose.model('Scorecard', scorecard);
 // Routes
 app.post('/api/v1/scorecard/scoreinsert', async (req, res) => {
     const { district, issues } = req.body;
-    console.log(req.body)
+
     try {
         // Find the district
         const scorecard = await Scorecard.findOne({ district });
 
         if (!scorecard) {
-            return res.status(404).send('District not found');
+            // If the district doesn't exist, create it with initial votes
+            scorecard = new DistrictIssues({
+                district,
+                issuesCount: issues.map(issue => ({ name: issue, votes: 1 })),
+                issues: [],
+            });
+        } else {
+            // Increment votes for the submitted issues
+            issues.forEach(issueName => {
+                const issue = scorecard.issuesCount.find(i => i.name === issueName);
+                if (issue) {
+                    issue.votes += 1;
+                } else {
+                    scorecard.issuesCount.push({ name: issueName, votes: 1 });
+                }
+            });
         }
 
-        // Increase the score by 1
-        scorecard.score += 1;
+        // Sort all issues by votes in descending order and pick the top 5
+        const sortedIssues = scorecard.issuesCount
+            .sort((a, b) => b.votes - a.votes)
+            .slice(0, 5)
+            .map(i => i.name);
 
-        // Update top issues
-        scorecard.issues = issues;
+        // Update the topIssues field with the top 5 sorted issues
+        scorecard.issues = sortedIssues;
 
-        await scorecard.save();
+        // Save the updated document
+        await districtVotes.save();
         res.status(200).send('Score and issues updated successfully');
     } catch (err) {
         res.status(400).send(err.message);
