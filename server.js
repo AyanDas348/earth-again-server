@@ -156,7 +156,7 @@ app.post('/api/v1/scorecard/scoreinsert', async (req, res) => {
         scorecard.issues = sortedIssues;
 
         // Save the updated document
-        await districtVotes.save();
+        await scorecard.save();
         res.status(200).send('Score and issues updated successfully');
     } catch (err) {
         res.status(400).send(err.message);
