@@ -129,7 +129,7 @@ app.post('/api/v1/scorecard/scoreinsert', async (req, res) => {
 
         if (!scorecard) {
             // If the district doesn't exist, create it with initial votes
-            scorecard = new DistrictIssues({
+            scorecard = new Scorecard({
                 district,
                 issuesCount: issues.map(issue => ({ name: issue, votes: 1 })),
                 issues: [],
