@@ -171,7 +171,11 @@ app.post('/api/v1/scorecard/scoreinsert', async (req, res) => {
 
         // Save the updated document
         await scorecard.save();
-        res.status(200).send('Score and issues updated successfully');
+        res.status(200).json({
+            success: true,
+            message: 'Form submitted successfully!',
+            data: formObject, // Properly formatted JSON response
+        });
     } catch (err) {
         res.status(400).send(err.message);
     }
