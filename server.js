@@ -125,7 +125,7 @@ app.post('/api/v1/scorecard/scoreinsert', async (req, res) => {
 
     try {
         // Find the district
-        const scorecard = await Scorecard.findOne({ district });
+        let scorecard = await Scorecard.findOne({ district });
 
         if (!scorecard) {
             // If the district doesn't exist, create it with initial votes
