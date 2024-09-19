@@ -133,6 +133,7 @@ app.post('/api/v1/scorecard/scoreinsert', async (req, res) => {
                 district,
                 issuesCount: issues.map(issue => ({ name: issue, votes: 1 })),
                 issues: [],
+                score: 5,
             });
         } else {
             // Increment votes for the submitted issues
@@ -148,12 +149,25 @@ app.post('/api/v1/scorecard/scoreinsert', async (req, res) => {
 
         // Sort all issues by votes in descending order and pick the top 5
         const sortedIssues = scorecard.issuesCount
-            .sort((a, b) => b.votes - a.votes)
-            .slice(0, 5)
-            .map(i => i.name);
+            .sort((a, b) => b.votes - a.votes);
 
         // Update the topIssues field with the top 5 sorted issues
-        scorecard.issues = sortedIssues;
+        scorecard.issues = sortedIssues.slice(0, 5).map(i => i.name);
+        // scorecard.score = sortedIssues
+        //     .slice(0, 5)
+        //     .map(i => i.votes)
+        //     .reduce((total, x) => total + x, 0) / 5;
+
+        const votes = sortedIssues
+            .slice(0, 5)
+            .map(i => i.votes)
+            .sort((a, b) => a - b);
+
+        const median = votes.length % 2 !== 0
+            ? votes[Math.floor(votes.length / 2)] // For odd length, pick the middle value
+            : (votes[votes.length / 2 - 1] + votes[votes.length / 2]) / 2; // For even length, average the two middle values
+
+        scorecard.score = median;
 
         // Save the updated document
         await scorecard.save();
